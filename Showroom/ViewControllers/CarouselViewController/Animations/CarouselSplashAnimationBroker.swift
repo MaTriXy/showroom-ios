@@ -61,7 +61,7 @@ private extension CarouselSplashAnimationBroker {
     let rLogoStartPosition = titleContainer.rLogo.layer.position
     titleContainer.rLogo.animate(duration: 0.001, [.layerPositionXY(from: Showroom.screenCenter, to: Showroom.screenCenter), .alpha(to: 1)])
     
-    titleContainer.rLogo.animationImages = (0...36).flatMap { UIImage(named: ($0 < 9) ? "logo0000\($0)" : "logo000\($0)") }
+    titleContainer.rLogo.animationImages = (0...36).compactMap { UIImage(named: ($0 < 9) ? "logo0000\($0)" : "logo000\($0)") }
     titleContainer.rLogo.animationDuration = 1.2
     titleContainer.rLogo.animationRepeatCount = 1
     titleContainer.rLogo.startAnimating()
@@ -98,8 +98,15 @@ private extension CarouselSplashAnimationBroker {
   }
   
   func contactUsButtonAnimation() {
+    let safeArea: CGFloat
+    if #available(iOS 11.0, *) {
+        safeArea = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+    } else {
+        safeArea = 0
+    }
+    
     let startPosition = contactUsButton.layer.position
-    let hidePosition = bottomContainer.bounds.size.height + contactUsButton.bounds.height / 2
+    let hidePosition = bottomContainer.bounds.size.height + contactUsButton.bounds.height / 2 + safeArea
     contactUsButton.animate(duration: 0.001, [
       .layerPositionY(from: hidePosition , to: hidePosition),
       .alpha(to: 1)
@@ -120,7 +127,7 @@ private extension CarouselSplashAnimationBroker {
     collectionView.animate(duration: 0.5,
                             delay: 2.5,
                             [.layerPositionX(from: hidePosition, to: startPositionX)],
-                            timing: .easyInEasyOut) { _ in
+                            timing: .easyInEasyOut) {
                               self.collectionView.layer.shouldRasterize = false
                             }
   }

@@ -31,26 +31,27 @@ class CarouselViewController: UIViewController {
   fileprivate var isSplashAnimation = true
   
   fileprivate let items: [Showroom.Control] = [
-                                               .elongationPreview,
-                                               .glidingCollection,
-                                               .circleMenu,
-                                               .foldingCell,
-                                               .paperSwitch,
-                                               .paperOnboarding,
-                                               .expandingCollection,
-                                               .previewTransition,
-//                                               .reelSearch,
-                                               .animationTabBar,
-//                                               .navigationStack,
-                                               .vr,
-                                                ]
+    .elongationPreview,
+    .glidingCollection,
+    .circleMenu,
+    .foldingCell,
+    .paperSwitch,
+    .paperOnboarding,
+    .expandingCollection,
+    .previewTransition,
+    //                                               .reelSearch,
+    .animationTabBar,
+    //                                               .navigationStack,
+    .vr,
+    ]
   
   fileprivate var splashBrokerAnimation: CarouselSplashAnimationBroker!
   fileprivate var transitionBrokerAnimation: CarouselTransitionAnimationBroker?
   
   fileprivate var foldingCellVC: UIViewController!
-//  fileprivate var searchVC: SearchViewController = UIStoryboard(storyboard: .Main).instantiateViewController()
-  
+
+  //  fileprivate var searchVC: SearchViewController = UIStoryboard(storyboard: .Main).instantiateViewController()
+
   // Index of current cell
   fileprivate var currentIndex: Int {
     guard let collectionView = self.collectionView else { return 0 }
@@ -106,7 +107,7 @@ extension CarouselViewController {
     if #available(iOS 10.0, *) {
       collectionView?.isPrefetchingEnabled = false
     }
-//    preloadSearchVC()
+    //    preloadSearchVC()
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -120,6 +121,12 @@ extension CarouselViewController {
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+    //    AppAnalytics.screen(event: .google(name: "CarouselViewController", vc: self))
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    
     AppAnalytics.screen(event: .google(name: "CarouselViewController", vc: self))
   }
   
@@ -145,9 +152,9 @@ extension  CarouselViewController {
     foldingCellVC = foldingVC
   }
   
-//  func preloadSearchVC() {
-//    _ = searchVC.view
-//  }
+  //  func preloadSearchVC() {
+  //    _ = searchVC.view
+  //  }
 }
 
 // MARK: Methods
@@ -183,7 +190,7 @@ extension CarouselViewController: UICollectionViewDelegate, UICollectionViewData
     let page = "\(currentIndex + 1)/\(items.count)"
     if pageLabel.text != page { pageLabel.text = page }
   }
-    
+  
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     let item = items[indexPath.row]
     
@@ -191,15 +198,15 @@ extension CarouselViewController: UICollectionViewDelegate, UICollectionViewData
     let vc: UIViewController
     switch item {
     case .foldingCell:  vc = foldingCellVC
-//    case .realSearch: vc = searchVC
+    //    case .realSearch: vc = searchVC
     default: vc = item.viewController
     }
-
+    
     vc.transitioningDelegate = self
     vc.modalPresentationStyle = .custom
     present(vc, animated: true) { [weak vc] in
       guard let vc = vc else { return }
-
+      
       AppAnalytics.screen(event: .google(name: item.title, vc: vc))
     }
   }
@@ -212,13 +219,13 @@ extension CarouselViewController {
     sender.isUserInteractionEnabled = false
     sender.animate(duration: 0, delay: 0, [.springScale(from: 0.9, to: 1, bounce: 20, spring: 10)])
     if sender.isSelected == true {
-        AppAnalytics.event(.google(name: "Buttons", parametr: "hide about"))
+      AppAnalytics.event(.google(name: "Buttons", parametr: "hide about"))
       aboutView.hide(on: view) {
         sender.isUserInteractionEnabled = true
       }
     } else {
-        AppAnalytics.event(.google(name: "Buttons", parametr: "show about"))
-        aboutView.show(on: view) {
+      AppAnalytics.event(.google(name: "Buttons", parametr: "show about"))
+      aboutView.show(on: view) {
         sender.isUserInteractionEnabled = true
       }
     }
@@ -238,6 +245,12 @@ extension CarouselViewController {
     if let url = URL(string: "https://business.ramotion.com/?utm_source=showroom&utm_medium=special&utm_campaign=v1/#Contact") {
       UIApplication.shared.open(url)
     }
+  }
+  
+  @IBAction func dribbleLogInHandler(_ sender: Any) {
+    let storyboard = UIStoryboard.storyboard(storyboard: .Navigation)
+    let dribbbleShotsVC: DribbbleShotsViewController = storyboard.instantiateViewController()
+    self.present(UINavigationController(rootViewController: dribbbleShotsVC), animated: true, completion: nil)
   }
 }
 

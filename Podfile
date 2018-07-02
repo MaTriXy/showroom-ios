@@ -2,6 +2,7 @@ platform :ios, '10.0'
 
 target 'Showroom' do
   use_frameworks!
+  inhibit_all_warnings!
 
 pod 'CircleMenu'
 pod 'FoldingCell'
@@ -19,8 +20,17 @@ pod 'RxSwift'
 pod 'RxCocoa'
 pod 'NSObject+Rx'
 pod 'Device'
+
 pod 'Firebase/Core'
+pod 'Firebase/Auth'
+pod 'Firebase/Firestore'
+
 pod 'ElongationPreview'
 pod 'GlidingCollection'
+pod 'OAuthSwift'
+pod 'RxAlamofire'
+pod 'Nuke'
+pod 'KeychainAccess'
+pod 'MBProgressHUD'
 
 end
