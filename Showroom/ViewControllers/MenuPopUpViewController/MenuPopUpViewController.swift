@@ -41,12 +41,12 @@ extension MenuPopUpViewController {
     infoViewBottom.constant = -infoViewHeight.constant
     infoView.alpha = 0
     
-    let gesture = UITapGestureRecognizer()
-    view.addGestureRecognizer(gesture)
+//    let gesture = UITapGestureRecognizer()
+//    view.addGestureRecognizer(gesture)
     
-    _ = gesture.rx.event.asObservable().subscribe { [weak self] _ in
-      self?.dismiss(animated: true, completion: nil)
-    }
+//    _ = gesture.rx.event.asObservable().subscribe { [weak self] _ in
+//      self?.dismiss(animated: true, completion: nil)
+//    }
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -140,20 +140,20 @@ extension MenuPopUpViewController {
   
   @IBAction func copyLinkHandler(_ sender: Any) {
     showInfoView()
-    AppAnalytics.event(.google(name: "Buttons", parametr: "copy link popup: \(shareUrlString)"))
+    AppAnalytics.event(.google(name: "Buttons", parametr: "copy link popup: \(shareUrlString ?? "")"))
     UIPasteboard.general.string = shareUrlString
   }
   
   @IBAction func sharedHandler(_ sender: Any) {
     
-    AppAnalytics.event(.google(name: "Buttons", parametr: "shared link popup: \(shareUrlString)"))
-    let activity = UIActivityViewController(activityItems: [shareUrlString], applicationActivities: nil)
+    AppAnalytics.event(.google(name: "Buttons", parametr: "shared link popup: \(shareUrlString ?? "")"))
+    let activity = UIActivityViewController(activityItems: [shareUrlString ?? ""], applicationActivities: nil)
     present(activity, animated: true, completion: nil)
   }
   
   @IBAction func backHandler(_ sender: Any) {
     AppAnalytics.event(.google(name: "Buttons", parametr: "back button popup"))
-    backButtonTap()
     dismiss(animated: true, completion: nil)
+    backButtonTap()
   }
 }

@@ -1,21 +1,18 @@
 import UIKit
+import WebKit
 
 class VRViewController: UIViewController {
   
-  @IBOutlet weak var webView: UIWebView!
-  let urlString = "https://ramotion.github.io/vr-menu-demo/main.html"
+  @IBOutlet weak var webView: WKWebView!
+  let urlString = Showroom.Control.vr.sharedURL
   
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    
-    _ = MenuPopUpViewController.showPopup(on: self, url: urlString, isRotate: true) { [weak self] in
+    MenuPopUpViewController.showPopup(on: self, url: urlString, isRotate: true) { [weak self] in
       UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
       self?.dismiss(animated: true, completion: nil)
-      self?.dismiss(animated: true, completion: nil)
-      
-      
     }
   }
   
@@ -26,10 +23,11 @@ class VRViewController: UIViewController {
 
     if let url = URL(string: urlString) {
       let request = URLRequest(url: url)
-      webView.loadRequest(request)
+        webView.load(request)
       
 //      [webView stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitUserSelect='none';"];
-      webView.stringByEvaluatingJavaScript(from: "document.documentElement.style.webkitUserSelect='none';")
+//      webView.stringByEvaluatingJavaScript(from: "document.documentElement.style.webkitUserSelect='none';")
+        webView.evaluateJavaScript("document.documentElement.style.webkitUserSelect='none';", completionHandler: nil)
     }
   }
   

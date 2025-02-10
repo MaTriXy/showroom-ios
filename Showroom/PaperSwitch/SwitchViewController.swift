@@ -1,7 +1,7 @@
 import UIKit
 import RAMPaperSwitch
 
-class SwitchViewController: UIViewController {
+class SwitchViewController: UIViewController  {
   
   @IBOutlet weak var connectContactsLabel: UILabel!
   @IBOutlet weak var phone1ImageView: UIImageView!
@@ -20,14 +20,9 @@ extension SwitchViewController {
     
     setupPaperSwitch()
     
-    _ = MenuPopUpViewController.showPopup(on: self, url: "https://github.com/Ramotion/paper-switch") { [weak self] in
-      self?.navigationController?.dismiss(animated: true, completion: nil)
-      self?.navigationController?.dismiss(animated: true, completion: nil)
+    MenuPopUpViewController.showPopup(on: self, url: Showroom.Control.paperSwitch.sharedURL) { [weak self] in
+      self?.dismiss(animated: true, completion: nil)
     }
-  }
-  
-  override var shouldAutorotate: Bool {
-    return false
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -56,13 +51,13 @@ extension SwitchViewController {
   }
   
   fileprivate func animateLabel(_ label: UILabel, onAnimation: Bool, duration: TimeInterval) {
-    UIView.transition(with: label, duration: duration, options: UIViewAnimationOptions.transitionCrossDissolve, animations: {
+    UIView.transition(with: label, duration: duration, options: UIView.AnimationOptions.transitionCrossDissolve, animations: {
       label.textColor = onAnimation ? UIColor.white : UIColor(red: 31/255.0, green: 183/255.0, blue: 252/255.0, alpha: 1)
       }, completion:nil)
   }
   
   fileprivate func animateImageView(_ imageView: UIImageView, onAnimation: Bool, duration: TimeInterval) {
-    UIView.transition(with: imageView, duration: duration, options: UIViewAnimationOptions.transitionCrossDissolve, animations: {
+    UIView.transition(with: imageView, duration: duration, options: UIView.AnimationOptions.transitionCrossDissolve, animations: {
       imageView.image = UIImage(named: onAnimation ? "img_phone_on" : "img_phone_off")
       }, completion:nil)
   }

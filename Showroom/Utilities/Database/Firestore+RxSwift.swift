@@ -36,13 +36,15 @@ extension Reactive where Base: Firestore {
     }
     
     func fetchShots(from user: User) -> Observable<[FirebaseModel.Shot]> {
+        
         return Observable.create({ (observer) -> Disposable in
+            
             Firestore.dbWithTimestamp
                 .collection(FirebaseConstant.shots)
                 .whereField(FirebaseConstant.userId, isEqualTo: user.id)
                 .getDocuments(completion: { (snapshot, error) in
                     if let error = error {
-                       observer.onError(error)
+                        observer.onError(error)
                     } else {
                         guard let snapshot = snapshot else {
                             observer.onError(FirebaseConstant.FirebaseError.emptyData)
@@ -68,7 +70,6 @@ private extension Firestore {
     static var dbWithTimestamp: Firestore {
         let db = Firestore.firestore()
         let settings = db.settings
-        settings.areTimestampsInSnapshotsEnabled = true
         db.settings = settings
         return db
     }

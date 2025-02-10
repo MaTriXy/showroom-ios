@@ -1,5 +1,5 @@
 import UIKit
-import EasyPeasy
+//import EasyPeasy
 import Device
 
 extension UINavigationController {
@@ -24,6 +24,7 @@ class CarouselViewController: UIViewController {
   @IBOutlet var aboutView: AboutView!
   @IBOutlet weak var infoButton: UIButton!
   @IBOutlet weak var contactUsButton: UIButton!
+  @IBOutlet weak var sendShotButton: UIButton!
   @IBOutlet weak var pageLabel: UILabel!
   @IBOutlet weak var collectionView: UICollectionView!
   @IBOutlet weak var bottomContainer: UIView!
@@ -42,7 +43,7 @@ class CarouselViewController: UIViewController {
     //                                               .reelSearch,
     .animationTabBar,
     //                                               .navigationStack,
-    .vr,
+    .vr
     ]
   
   fileprivate var splashBrokerAnimation: CarouselSplashAnimationBroker!
@@ -77,14 +78,17 @@ extension CarouselViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    UIApplication.shared.isStatusBarHidden = true
+    if let statusBar: UIView = UIApplication.shared.value(forKey: "statusBar") as? UIView {
+      statusBar.isHidden = true
+    }
     
     collectionViewHeight.constant = CarouselFlowLayout.cellSize.height
-    collectionView.decelerationRate = UIScrollViewDecelerationRateFast
+    collectionView.decelerationRate = UIScrollView.DecelerationRate.fast
     
     splashBrokerAnimation = CarouselSplashAnimationBroker(collectionView: collectionView,
                                                           infoButton: infoButton,
                                                           contactUsButton: contactUsButton,
+                                                          sendShotButton: sendShotButton,
                                                           pageLabel: pageLabel,
                                                           titleContainer: topContainer,
                                                           topRectangle: topRectangle,
@@ -95,6 +99,7 @@ extension CarouselViewController {
     transitionBrokerAnimation = CarouselTransitionAnimationBroker(collectionView: collectionView,
                                                                   infoButton: infoButton,
                                                                   contactUsButton: contactUsButton,
+                                                                  sendShotButton: sendShotButton,
                                                                   pageLabel: pageLabel,
                                                                   titleContainer: topContainer,
                                                                   bottomContainer: bottomContainer)
@@ -107,7 +112,6 @@ extension CarouselViewController {
     if #available(iOS 10.0, *) {
       collectionView?.isPrefetchingEnabled = false
     }
-    //    preloadSearchVC()
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -129,10 +133,6 @@ extension CarouselViewController {
     
     AppAnalytics.screen(event: .google(name: "CarouselViewController", vc: self))
   }
-  
-  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    return .portrait
-  }
 }
 
 // MARK: Configure
@@ -144,6 +144,12 @@ extension  CarouselViewController {
     contactUsButton.layer.shadowOffset = CGSize(width: 0, height: 2)
     contactUsButton.layer.shadowRadius = 4
     contactUsButton.layer.shadowOpacity = 0.3
+    
+    sendShotButton.layer.cornerRadius = C.radius
+    sendShotButton.layer.shadowColor = UIColor.black.cgColor
+    sendShotButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+    sendShotButton.layer.shadowRadius = 4
+    sendShotButton.layer.shadowOpacity = 0.3
   }
   
   func preloadfoldinCellVC() {
@@ -192,9 +198,9 @@ extension CarouselViewController: UICollectionViewDelegate, UICollectionViewData
   }
   
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    
     let item = items[indexPath.row]
-    
-    
+
     let vc: UIViewController
     switch item {
     case .foldingCell:  vc = foldingCellVC
@@ -206,7 +212,7 @@ extension CarouselViewController: UICollectionViewDelegate, UICollectionViewData
     vc.modalPresentationStyle = .custom
     present(vc, animated: true) { [weak vc] in
       guard let vc = vc else { return }
-      
+
       AppAnalytics.screen(event: .google(name: item.title, vc: vc))
     }
   }
@@ -242,26 +248,51 @@ extension CarouselViewController {
   @IBAction func contactUsHandler(_ sender: Any) {
     AppAnalytics.event(.google(name: "Buttons", parametr: "contact us"))
     
-    if let url = URL(string: "https://business.ramotion.com/?utm_source=showroom&utm_medium=special&utm_campaign=v1/#Contact") {
+    if let url = URL(string: "https://dev.ramotion.com/") {
       UIApplication.shared.open(url)
     }
   }
   
-  @IBAction func dribbleLogInHandler(_ sender: Any) {
+  @IBAction func dribbleLogInHandler(_ sender: UIView) {
     let storyboard = UIStoryboard.storyboard(storyboard: .Navigation)
     let dribbbleShotsVC: DribbbleShotsViewController = storyboard.instantiateViewController()
-    self.present(UINavigationController(rootViewController: dribbbleShotsVC), animated: true, completion: nil)
+    dribbbleShotsVC.transitioningDelegate = self
+    dribbbleShotsVC.modalPresentationStyle = .custom
+    self.present(dribbbleShotsVC, animated: true, completion: nil)
   }
+}
+
+extension CarouselViewController : DribbbleShotsTransitionSource {
+  
+  func dribbbleShotsTransitionSourceView() -> UIView {
+    return sendShotButton
+  }
+  
 }
 
 // MARK: transtion delegate
 extension CarouselViewController: UIViewControllerTransitioningDelegate {
   
   func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-    return OpenControllerTransition(duration: 1)
+    if presented is DribbbleShotsTransitionDestination {
+      let sourceView: UIView = (presenting as? DribbbleShotsTransitionSource)?.dribbbleShotsTransitionSourceView() ?? presenting.view
+      return DribbbleShotsTransition(direction: .presenting(sourceView: sourceView))
+    } else {
+      let openController = OpenControllerTransition(direction: .presenting)
+//      openController.animationCompletionHandler = { [weak self] in self?.transitionController(isOpen: true) }
+      return openController
+    }
   }
   
   func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-    return HideControllerTransition(duration: 0.5)
+//    let presenting = dismissed.presentingViewController
+    if dismissed is DribbbleShotsTransitionDestination {
+      let destinationView: UIView = (dismissed.presentingViewController as? DribbbleShotsTransitionSource)?.dribbbleShotsTransitionSourceView() ?? view
+      return DribbbleShotsTransition(direction: .dismissing(destinationView: destinationView))
+    } else {
+      let dismissController = OpenControllerTransition(direction: .dismissing)
+//      openController.animationCompletionHandler = { [weak self] in self?.transitionController(isOpen: false) }
+      return dismissController
+    }
   }
 }

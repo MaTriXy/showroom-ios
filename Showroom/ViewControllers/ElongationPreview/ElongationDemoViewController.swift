@@ -19,8 +19,7 @@ class ElongationDemoViewController: ElongationViewController {
     setup()
 
     // Setup Showroom
-    _ = MenuPopUpViewController.showPopup(on: self, url: Showroom.Control.elongationPreview.sharedURL) { [weak self] in
-      self?.dismiss(animated: true, completion: nil)
+    MenuPopUpViewController.showPopup(on: self, url: Showroom.Control.elongationPreview.sharedURL) { [weak self] in
       self?.dismiss(animated: true, completion: nil)
     }
   }
@@ -35,12 +34,11 @@ class ElongationDemoViewController: ElongationViewController {
   }
   
   override func openDetailView(for indexPath: IndexPath) {
-    let detailViewController = ElongationDemoDetailViewController(style: UITableViewStyle.grouped)
+    let detailViewController = ElongationDemoDetailViewController(style: .grouped)
     let villa = datasource[indexPath.row]
     detailViewController.title = villa.title
     expand(viewController: detailViewController)
   }
-  
 }
 
 // MARK: - Setup ⛏
@@ -72,11 +70,11 @@ extension ElongationDemoViewController {
     
     let villa = datasource[indexPath.row]
     
-    let attributedLocality = NSMutableAttributedString(string: villa.locality.uppercased(), attributes: [
+    let attributedLocality = NSAttributedString(string: villa.locality.uppercased(), attributes: [
         kCTFontAttributeName: UIFont.robotoFont(ofSize: 22, weight: .medium),
         kCTKernAttributeName: 8.2,
         kCTForegroundColorAttributeName: UIColor.white
-      ] as [NSAttributedStringKey : Any])
+        ] as [NSAttributedString.Key : Any])
     
     cell.topImageView?.image = UIImage(named: villa.imageName)
     cell.localityLabel?.attributedText = attributedLocality
@@ -84,5 +82,4 @@ extension ElongationDemoViewController {
     cell.aboutTitleLabel?.text = villa.title
     cell.aboutDescriptionLabel?.text = villa.description
   }
-  
 }

@@ -58,7 +58,7 @@ extension AboutView {
     let urlString: String
     switch item {
     case .dribbble: urlString = "https://dribbble.com/ramotion/?utm_source=showroom&utm_medium=special&utm_campaign=socialbuton"
-    case .facebook: urlString = "https://facebook.com/ramotioncom"
+    case .facebook: urlString = "https://facebook.com/Ramotion"
     case .twitter: urlString = "https://twitter.com/ramotion"
     case .github: urlString = "https://github.com/ramotion"
     case .instagram:
@@ -76,7 +76,7 @@ extension AboutView {
   
   @IBAction func LearnMoreHandler(_ sender: UIButton) {
     AppAnalytics.event(.google(name: "Buttons", parametr: "about"))
-    let urlString = "https://business.ramotion.com/?utm_source=showroom&utm_medium=special&utm_campaign=learnmore"
+    let urlString = "https://dev.ramotion.com/"
     if let url = URL(string: urlString) { UIApplication.shared.open(url) }
   }
 }
@@ -93,7 +93,7 @@ extension AboutView {
     self.easy.layout(Edges())
     
     view.layoutIfNeeded()
-    view.bringSubview(toFront: titleView)
+    view.bringSubviewToFront(titleView)
     
     circleView?.show()
     topViewHeight.constant = titleView.bounds.size.height
@@ -118,16 +118,17 @@ extension AboutView {
     titleLabel.pop_removeAllAnimations()
     titleLabel.alpha = 0
     titleLabel.animate(duration: 0.4, delay: 0.2, [.alphaFrom(0, to: 1, removed: false)])
-    titleLabel.animate(duration: 0.6, delay: 0.2,
-                       [.layerPositionY(from: titleLabelTopConstraint.constant + titleLabelHeight.constant / 2 + sharedViewHeightConstraint.constant / 2,
-                                        to: titleLabelTopConstraint.constant + titleLabelHeight.constant / 2)
-                       ])
+    let titleLabelAnimationFrom = titleLabelTopConstraint.constant + titleLabelHeight.constant / 2 + sharedViewHeightConstraint.constant / 2
+    let titleLabelAnimationTo = titleLabelTopConstraint.constant + titleLabelHeight.constant / 2
+    titleLabel.animate(duration: 0.6, delay: 0.2, [.layerPositionY(from: titleLabelAnimationFrom, to: titleLabelAnimationTo)])
     
     infoText.pop_removeAllAnimations()
     infoText.alpha = 0
     infoText.animate(duration: 0.5, delay: 0.3, [.alphaFrom(0, to: 1, removed: false)])
-    let from = titleLabelTopConstraint.constant + titleLabelHeight.constant + infoText.bounds.size.height / 2 + infoTextTopConstraint.constant + sharedViewHeightConstraint.constant / 2
-    infoText.animate(duration: 0.7, delay: 0.3, [.layerPositionY(from: from, to: from - sharedViewHeightConstraint.constant / 2)])
+    let titleLabelSummaryHeight = titleLabelTopConstraint.constant + titleLabelHeight.constant
+    let infoTextSummaryHeight = infoText.bounds.size.height / 2 + infoTextTopConstraint.constant
+    let infoTextAnimationFrom = titleLabelSummaryHeight + infoTextSummaryHeight + sharedViewHeightConstraint.constant / 2
+    infoText.animate(duration: 0.7, delay: 0.3, [.layerPositionY(from: infoTextAnimationFrom, to: infoTextAnimationFrom - sharedViewHeightConstraint.constant / 2)])
     
     learnMoreLabel.pop_removeAllAnimations()
     learnMoreLabel.alpha = 0

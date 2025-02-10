@@ -1,4 +1,4 @@
-platform :ios, '10.0'
+platform :ios, '11.0'
 
 target 'Showroom' do
   use_frameworks!
@@ -30,6 +30,7 @@ pod 'GlidingCollection'
 pod 'OAuthSwift'
 pod 'RxAlamofire'
 pod 'Nuke'
+pod 'Gifu'
 pod 'KeychainAccess'
 pod 'MBProgressHUD'
 

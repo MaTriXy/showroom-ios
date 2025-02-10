@@ -7,9 +7,9 @@
 //
 
 import UIKit
-import Firebase
 import ElongationPreview
 import OAuthSwift
+import RxSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,26 +17,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
 
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-    // Override point for customization after application launch.
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
+        
+        configureNavigationBar()
+        AppAnalytics.configuration([.google])
+        configureElongationPreviewControl()
+        ReelSearchViewModel.shared.initializeDatabase()
     
-    configureNavigationBar()
-    AppAnalytics.configuration([.google])
-    configureElongationPreviewControl()
-    ReelSearchViewModel.shared.initializeDatabase()
-    
-    return true
+        return true
   }
 }
 
 // MARK: Handle callback url
 extension AppDelegate {
     
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         if (url.host == "oauth") {
             OAuthSwift.handle(url: url)
         }
         return true
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        let topVC = UIApplication.getTopMostViewController()
+        guard topVC is DribbbleShotsViewController else { return }
+        
+        if KeychainManager.getKeychain() == nil {
+            topVC?.dismiss(animated: true, completion: {
+                let message = "You must be logged in\nto send a shot."
+                UIAlertController.show(message: message, completionAction: { })
+            })
+        }
     }
 }
 
@@ -51,8 +63,8 @@ extension AppDelegate {
         
         if let font = UIFont(name: "Avenir-medium", size: 18) {
             UINavigationBar.appearance().titleTextAttributes = [
-                NSAttributedStringKey.foregroundColor: UIColor.white,
-                NSAttributedStringKey.font: font,
+                NSAttributedString.Key.foregroundColor: UIColor.white,
+                NSAttributedString.Key.font: font,
             ]
         }
     }
